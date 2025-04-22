@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>로그인3</title>
+    <style>
+      body {
+        font-family: "Arial", sans-serif;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        background-color: black;
+      }
+
+      .container {
+        background-color: #f5f5f5;
+        border-radius: 12px;
+        padding: 40px 40px;
+        width: 100%;
+        max-width: 300px;
+        text-align: center;
+        font-size: 16px;
+      }
+
+      h2 {
+        color: #4e73df;
+        margin-bottom: 20px;
+        font-size: 24px;
+        font-weight: bold;
+      }
+
+      p {
+        color: #555;
+        font-size: 18px;
+        margin: 10px 0;
+      }
+
+      p span {
+        font-weight: bold;
+        color: #333;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h2>로그인</h2>
+      <p>
+        <span>아이디:</span> <input type="text" name="userid" id="userid" />
+      </p>
+      <p>
+        <span>비밀번호:</span>
+        <input type="password" name="userpw" id="userpw" />
+      </p>
+      <p><button id="loginBtn">로그인</button></p>
+      <script>
+        document.getElementById("loginBtn").addEventListener("click", () => {
+          const userid = document.getElementById("userid").value;
+          const userpw = document.getElementById("userpw").value;
+          // location.href로 서버에 GET 요청
+          location.href = `/login?userid=${userid}&userpw=${userpw}`;
+        });
+      </script>
+    </div>
+  </body>
+</html>
