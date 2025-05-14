@@ -8,6 +8,7 @@ import { createServer } from "http";
 import path from "path";
 import { Server } from "socket.io";
 import { fileURLToPath } from "url";
+import fs from "fs";
 
 const app = express();
 const server = createServer(app);
@@ -18,11 +19,12 @@ const io = new Server(server);
 // path.dirname: 디렉토리 이름만 추출
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+const logsDir = path.join(__dirname, "logs");
+if (!fs.existsSync(logsDir)) fs.mkdirSync(logsDir);
 
 app.use(express.static(path.join(__dirname, "public")));
 
 const users = {};
-const channel = ["lobby", "sports", "programming", "music"];
 
 io.on("connection", (socket) => {
   socket.on("join", ({ nickname, channel }) => {
@@ -56,6 +58,27 @@ io.on("connection", (socket) => {
     }
   });
 
+  socket.on("changeChannel", ({ newChannel }) => {
+    const oldChannel = socket.channel;
+    const nickname = socket.nickname;
+    socket.leave(oldChannel);
+    io.to(oldChannel).emit("message", {
+      user: "system",
+      text: `${nickname}님이 ${newChannel} 채널로 이동했습니다`,
+    });
+    socket.channel = newChannel;
+    users[socket.id].channel = newChannel;
+    socket.join(newChannel);
+
+    const joinMsg = { user: "system", text: `${nickname}님이 입장했습니다` };
+    io.to(newChannel).emit("message", joinMsg);
+
+    const previousLog = getLog(newChannel);
+    socket.emit("chatLog", previousLog);
+
+    updateUserList();
+  });
+
   socket.on("disconnect", () => {
     const user = users[socket.id];
     if (user) {
@@ -65,6 +88,7 @@ io.on("connection", (socket) => {
       };
       io.to(user.channel).emit("message", msg);
       delete users[socket.id];
+
       updateUserList();
     }
   });
