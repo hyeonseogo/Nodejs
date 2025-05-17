@@ -73,8 +73,8 @@ io.on("connection", (socket) => {
     const joinMsg = { user: "system", text: `${nickname}님이 입장했습니다` };
     io.to(newChannel).emit("message", joinMsg);
 
-    const previousLog = getLog(newChannel);
-    socket.emit("chatLog", previousLog);
+    // const previousLog = getLog(newChannel);
+    // socket.emit("chatLog", previousLog);
 
     updateUserList();
   });
